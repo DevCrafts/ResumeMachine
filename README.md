@@ -1,5 +1,7 @@
 Background information: while working in service company we had to keep our employees (read specialists) CV's up to date as these documents are often required within the Tender process. It was a challange with Word templates, as not everyone is an expert in using Word and all the predifined styles in particular template. Taking into consideration that template itself should have been made in a right way and easy for people to fill in. This was leading into mismatches in CV's outlook. 
 
+During development more attention has been paid to functionality than UI. If time will allow UI will be beautified.
+
 For simplicity of useage and purpose of application this application has been made on WPF.
 
 Requirements:
