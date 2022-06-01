@@ -275,6 +275,7 @@ namespace ResumeMachine.ViewModels
     {
       this.ProgressBarIsRunning = true;
       this.AlertMessage = await WordWriter.WriteToWordTemplate(this.ResumeData);
+      await this.SaveToJsonAsync();
       this.ProgressBarIsRunning = false;
       ShowSuccess("Files are ready", this.AlertMessage);
 
@@ -394,6 +395,7 @@ namespace ResumeMachine.ViewModels
       {
         selectedEmployee = value;
         this.OnPropertyChanged();
+        _ = this.LoadFromJsonAsync();
       }
     }
 
@@ -450,7 +452,6 @@ namespace ResumeMachine.ViewModels
     public ICommand RemoveLanguageCommand => new RelayCommand(param => this.RemoveLanguage(), canExecute: param => this.CanRemoveLanguage());
     public ICommand ToMFilesCommand => new RelayCommand(param => this.ToMFiles());
     public ICommand ChangeAllCVsCommand => new AsyncRelayCommand(param => this.ChangeAllCvsAsync());
-    public ICommand SaveToJsonCommand => new AsyncRelayCommand(param => this.SaveToJsonAsync());
     public ICommand PrintCommand => new AsyncRelayCommand(param => this.PrintAsync());
 
     private static readonly NotificationManager notificationManager = new();
