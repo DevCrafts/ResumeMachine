@@ -1,0 +1,32 @@
+﻿<UserControl x:Class="ResumeMachine.UserControls.NotificationDialog"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:wpf="clr-namespace:MaterialDesignThemes.Wpf;assembly=MaterialDesignThemes.Wpf"
+             xmlns:system="clr-namespace:System;assembly=mscorlib" 
+             xmlns:domain="clr-namespace:ResumeMachine.Validation" 
+             xmlns:viewmodels="clr-namespace:ResumeMachine.ViewModels" 
+             d:DataContext="{d:DesignInstance Type=viewmodels:NotificationViewModel}"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+  <Grid Margin="16">
+
+    <Grid.RowDefinitions>
+      <RowDefinition />
+      <RowDefinition />
+      <RowDefinition />
+    </Grid.RowDefinitions>
+    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Margin="20,20,20,20" Foreground="Black" Grid.Row="1" Text="{Binding ErrorText}"/>
+    <StackPanel Orientation="Horizontal" Grid.Row="3"
+                    Margin="0 16 0 0" HorizontalAlignment="Center">
+      <Button IsDefault="True" Style="{DynamicResource MaterialDesignFlatButton}"
+              Command="{x:Static wpf:DialogHost.CloseDialogCommand}">
+        <Button.CommandParameter>
+          <system:Boolean>True</system:Boolean>
+        </Button.CommandParameter>
+        UNDERSTOOD
+      </Button>
+    </StackPanel>
+  </Grid>
+</UserControl>

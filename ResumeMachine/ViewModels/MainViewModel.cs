@@ -1,35 +1,28 @@
-﻿using ResumeMachine.Commands;
+﻿using MaterialDesignThemes.Wpf;
+using Notification.Wpf;
+using ResumeMachine.Commands;
+using ResumeMachine.Helper;
 using ResumeMachine.Models;
+using ResumeMachine.UserControls;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Text;
+using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Word = Microsoft.Office.Interop.Word;
-using System.Reflection;
-using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Wordprocessing;
-using DocumentFormat.OpenXml;
-using ResumeMachine.Helper;
-using System.Windows.Threading;
-using System.Timers;
-using Notification.Wpf;
-using System.Windows.Media;
 
-namespace ResumeMachine.ViewModel
+namespace ResumeMachine.ViewModels
 {
   public class MainViewModel : BaseViewModel
   {
-    private static readonly NotificationManager notificationManager = new();
-    private System.Timers.Timer Timer = new System.Timers.Timer();
-    private volatile bool RequestStop = false;
-
     public MainViewModel()
     {
+      this.ConfirmationDialogViewModel = new ConfirmationDialogViewModel();
+      this.NotificationViewModel = new NotificationViewModel();
+
       this.nationalities = this.LoadNationalities();
       this.availableLanguages = this.LoadAvailableLanguages();
       this.languageLevels = new List<string> { "Beginner", "Intermediate", "Advanced", "Mother tongue" };
@@ -71,7 +64,7 @@ namespace ResumeMachine.ViewModel
         PresentPosition = "Director",
         YearsWithCompany = "2",
         CurrentCompany = "Google",
-        Nationality = this.nationalities[3],
+        Nationality = nationalities[3],
         DateOfBirth = new DateTime(1989, 11, 21),
         JobRecords = new ObservableCollection<JobRecord>
           {
@@ -113,14 +106,14 @@ namespace ResumeMachine.ViewModel
           new Language
           {
             Id = 1,
-            Name = this.availableLanguages[5],
-            Level = this.languageLevels[1],
+            Name = availableLanguages[5],
+            Level = languageLevels[1],
           },
           new Language
           {
             Id = 1,
-            Name = this.availableLanguages[2],
-            Level = this.languageLevels[3],
+            Name = availableLanguages[2],
+            Level = languageLevels[3],
           }
         },
       };
@@ -142,19 +135,35 @@ namespace ResumeMachine.ViewModel
       return new List<string>(nationalities);
     }
 
-    public ICommand LoadDataCommand => new AsyncRelayCommand(async param => await this.LoadFromJsonAsync());
-    public ICommand AddPositionCommand => new RelayCommand(param => this.AddNewPosition());
-    public ICommand RemovePositionCommand => new RelayCommand(param => this.RemovePosition(), canExecute: param => this.CanRemovePosition());
-    public ICommand AddEducationCommand => new RelayCommand(param => this.AddNewEducation());
-    public ICommand RemoveEducationCommand => new RelayCommand(param => this.RemoveEducation(), canExecute: param => this.CanRemoveEducation());
-    public ICommand AddLanguageCommand => new RelayCommand(param => this.AddNewLanguage());
-    public ICommand RemoveLanguageCommand => new RelayCommand(param => this.RemoveLanguage(), canExecute: param => this.CanRemoveLanguage());
-    public ICommand ToMFilesCommand => new RelayCommand(param => this.ToMFiles());
-    public ICommand ChangeAllCVsCommand => new RelayCommand(param => this.ChangeAllCVs());
-    public ICommand SaveToJsonCommand => new AsyncRelayCommand(async param => await this.SaveToJsonAsync());
-    public ICommand PrintCommand => new AsyncRelayCommand(async param => await this.PrintAsync());
+    private async Task ChangeAllCvsAsync()
+    {
+      ConfirmationDialog view = new ConfirmationDialog
+      {
+        DataContext = this.ConfirmationDialogViewModel
+      };
 
-    private void ChangeAllCVs()
+      this.ConfirmationDialogViewModel.NotificationMessage = "Are you sure you want to proceed?";
+      object result = await DialogHost.Show(view, "MainDialogHost", this.ExtendedOpenedEventHandler, this.ExtendedNotificationClosingEventHandler);
+    }
+
+    private void ExtendedOpenedEventHandler(object sender, DialogOpenedEventArgs eventargs)
+    {
+      // something here
+    }
+
+    private void ExtendedNotificationClosingEventHandler(object sender, DialogClosingEventArgs eventArgs)
+    {
+      if ((bool)eventArgs.Parameter == false)
+      {
+        return;
+      }
+
+      eventArgs.Cancel();
+
+      Task.Delay(TimeSpan.FromSeconds(0)).ContinueWith((t, _) => eventArgs.Session.Close(false), this.PerformChangeOfAllCvsAsync(), TaskScheduler.FromCurrentSynchronizationContext());
+    }
+
+    private Task PerformChangeOfAllCvsAsync()
     {
       throw new NotImplementedException();
     }
@@ -176,7 +185,7 @@ namespace ResumeMachine.ViewModel
 
     private void AddNewLanguage()
     {
-      this.resumeData.Languages.Add(new Language { });
+      resumeData.Languages.Add(new Language { });
     }
 
     private void RemoveLanguage()
@@ -196,7 +205,7 @@ namespace ResumeMachine.ViewModel
 
     private async Task SaveToJsonAsync()
     {
-      string strPath = Environment.GetFolderPath(System.Environment.SpecialFolder.DesktopDirectory);
+      string strPath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
 
       string? fileName = $"{this.ResumeData.FirstName} {this.ResumeData.LastName} CV.json";
       using FileStream? stream = File.Create(Path.Combine(strPath, fileName));
@@ -206,7 +215,7 @@ namespace ResumeMachine.ViewModel
 
     private async Task LoadFromJsonAsync()
     {
-      string strPath = Environment.GetFolderPath(System.Environment.SpecialFolder.DesktopDirectory);
+      string strPath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
       string? fileName = $"{this.ResumeData.FirstName} {this.ResumeData.LastName} CV.json";
 
       if (!File.Exists(Path.Combine(strPath, fileName)))
@@ -267,7 +276,7 @@ namespace ResumeMachine.ViewModel
       this.ProgressBarIsRunning = true;
       this.AlertMessage = await WordWriter.WriteToWordTemplate(this.ResumeData);
       this.ProgressBarIsRunning = false;
-      this.ShowSuccess("Files are ready", this.AlertMessage);
+      ShowSuccess("Files are ready", this.AlertMessage);
 
       this.StartTimer();
     }
@@ -336,10 +345,10 @@ namespace ResumeMachine.ViewModel
     private ResumeData resumeData;
     public ResumeData ResumeData
     {
-      get => this.resumeData;
+      get => resumeData;
       set
       {
-        this.resumeData = value;
+        resumeData = value;
         this.OnPropertyChanged();
       }
     }
@@ -347,10 +356,10 @@ namespace ResumeMachine.ViewModel
     private List<string> nationalities;
     public List<string> Nationalities
     {
-      get => this.nationalities;
+      get => nationalities;
       set
       {
-        this.nationalities = value;
+        nationalities = value;
         this.OnPropertyChanged();
       }
     }
@@ -358,10 +367,10 @@ namespace ResumeMachine.ViewModel
     private List<string> availableLanguages;
     public List<string> AvailableLanguages
     {
-      get => this.availableLanguages;
+      get => availableLanguages;
       set
       {
-        this.availableLanguages = value;
+        availableLanguages = value;
         this.OnPropertyChanged();
       }
     }
@@ -369,10 +378,10 @@ namespace ResumeMachine.ViewModel
     private List<string> languageLevels;
     public List<string> LanguageLevels
     {
-      get => this.languageLevels;
+      get => languageLevels;
       set
       {
-        this.languageLevels = value;
+        languageLevels = value;
         this.OnPropertyChanged();
       }
     }
@@ -380,10 +389,10 @@ namespace ResumeMachine.ViewModel
     private string selectedEmployee;
     public string SelectedEmployee
     {
-      get => this.selectedEmployee;
+      get => selectedEmployee;
       set
       {
-        this.selectedEmployee = value;
+        selectedEmployee = value;
         this.OnPropertyChanged();
       }
     }
@@ -391,10 +400,10 @@ namespace ResumeMachine.ViewModel
     private string alertMessage;
     public string AlertMessage
     {
-      get => this.alertMessage;
+      get => alertMessage;
       set
       {
-        this.alertMessage = value;
+        alertMessage = value;
         this.OnPropertyChanged();
       }
     }
@@ -402,10 +411,10 @@ namespace ResumeMachine.ViewModel
     private bool progressBarIsRunning;
     public bool ProgressBarIsRunning
     {
-      get => this.progressBarIsRunning;
+      get => progressBarIsRunning;
       set
       {
-        this.progressBarIsRunning = value;
+        progressBarIsRunning = value;
         this.OnPropertyChanged();
       }
     }
@@ -413,10 +422,10 @@ namespace ResumeMachine.ViewModel
     private bool isPresent;
     public bool IsPresent
     {
-      get => this.isPresent;
+      get => isPresent;
       set
       {
-        this.isPresent = value;
+        isPresent = value;
         this.OnPropertyChanged();
       }
     }
@@ -424,12 +433,31 @@ namespace ResumeMachine.ViewModel
     private ObservableCollection<string> employees;
     public ObservableCollection<string> Employees
     {
-      get => this.employees;
+      get => employees;
       set
       {
-        this.employees = value;
+        employees = value;
         this.OnPropertyChanged();
       }
     }
+
+    public ICommand LoadDataCommand => new AsyncRelayCommand(param => this.LoadFromJsonAsync());
+    public ICommand AddPositionCommand => new RelayCommand(param => this.AddNewPosition());
+    public ICommand RemovePositionCommand => new RelayCommand(param => this.RemovePosition(), canExecute: param => this.CanRemovePosition());
+    public ICommand AddEducationCommand => new RelayCommand(param => this.AddNewEducation());
+    public ICommand RemoveEducationCommand => new RelayCommand(param => this.RemoveEducation(), canExecute: param => this.CanRemoveEducation());
+    public ICommand AddLanguageCommand => new RelayCommand(param => this.AddNewLanguage());
+    public ICommand RemoveLanguageCommand => new RelayCommand(param => this.RemoveLanguage(), canExecute: param => this.CanRemoveLanguage());
+    public ICommand ToMFilesCommand => new RelayCommand(param => this.ToMFiles());
+    public ICommand ChangeAllCVsCommand => new AsyncRelayCommand(param => this.ChangeAllCvsAsync());
+    public ICommand SaveToJsonCommand => new AsyncRelayCommand(param => this.SaveToJsonAsync());
+    public ICommand PrintCommand => new AsyncRelayCommand(param => this.PrintAsync());
+
+    private static readonly NotificationManager notificationManager = new();
+    private System.Timers.Timer Timer = new System.Timers.Timer();
+    private volatile bool RequestStop = false;
+
+    private ConfirmationDialogViewModel ConfirmationDialogViewModel { get; set; }
+    public NotificationViewModel NotificationViewModel { get; set; }
   }
 }

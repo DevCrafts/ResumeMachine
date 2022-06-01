@@ -17,7 +17,7 @@ using System.Runtime.CompilerServices;
 
 #endregion
 
-namespace ResumeMachine.ViewModel
+namespace ResumeMachine.ViewModels
 {
   public abstract class BaseViewModel : INotifyPropertyChanged, INotifyDataErrorInfo
   {
