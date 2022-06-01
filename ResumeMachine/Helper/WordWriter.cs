@@ -27,12 +27,12 @@ namespace ResumeMachine.Helper
       //  return "Some of files in output directory is in use, please close and try again!";
       //}
 
-      Word._Application wApp = new Word.Application();
-      Word.Documents wDocs = wApp.Documents;
-      Word._Document wDoc = wDocs.Open(fullLocationPath, ReadOnly: false);
-
       await System.Threading.Tasks.Task.Run(() =>
       {
+        Word._Application wApp = new Word.Application();
+        Word.Documents wDocs = wApp.Documents;
+        Word._Document wDoc = wDocs.Open(fullLocationPath, ReadOnly: false);
+
         wDoc.Activate();
 
         Word.Bookmarks wBookmarks = wDoc.Bookmarks;
@@ -155,13 +155,13 @@ namespace ResumeMachine.Helper
 
         wDoc.SaveAs2(fullPDFDestinationPath, Word.WdSaveFormat.wdFormatPDF);
         wDoc.SaveAs2(fullWordDestinationPath);
+
+        wDoc.Close(false); // Close the Word Document.
+        wApp.Quit(false, false, false);
+
+        wDoc = null;
+        wApp = null;
       });
-
-      wDoc.Close(false); // Close the Word Document.
-      wApp.Quit(false, false, false);
-
-      wDoc = null;
-      wApp = null;
 
       return "PDF and Word files has been successfully created";
     }
