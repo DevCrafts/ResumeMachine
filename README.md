@@ -14,3 +14,5 @@ Built with:
 - .NET 6
 - WPF Material Design
 - WPF
+
+![image](https://user-images.githubusercontent.com/72302395/171487421-ef9ce328-5c3e-4dab-8dbe-8251228ec712.png)
