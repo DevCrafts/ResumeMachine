@@ -1,6 +1,7 @@
 ﻿using MaterialDesignThemes.Wpf;
 using Notification.Wpf;
 using ResumeMachine.Commands;
+using ResumeMachine.Data;
 using ResumeMachine.Helper;
 using ResumeMachine.Models;
 using ResumeMachine.UserControls;
@@ -22,6 +23,7 @@ namespace ResumeMachine.ViewModels
     {
       this.ConfirmationDialogViewModel = new ConfirmationDialogViewModel();
       this.NotificationViewModel = new NotificationViewModel();
+      this.JsonDataProvider = new JsonDataProvider();
 
       this.nationalities = this.LoadNationalities();
       this.availableLanguages = this.LoadAvailableLanguages();
@@ -203,62 +205,21 @@ namespace ResumeMachine.ViewModels
       throw new NotImplementedException();
     }
 
-    private async Task SaveToJsonAsync()
-    {
-      string strPath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
-
-      string? fileName = $"{this.ResumeData.FirstName} {this.ResumeData.LastName} CV.json";
-      using FileStream? stream = File.Create(Path.Combine(strPath, fileName));
-      await JsonSerializer.SerializeAsync(stream, resumeData);
-      await stream.DisposeAsync();
-    }
-
     private async Task LoadFromJsonAsync()
     {
-      string strPath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
-      string? fileName = $"{this.ResumeData.FirstName} {this.ResumeData.LastName} CV.json";
+      string destinationPath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+      string? fileName = $"{resumeData.FirstName} {resumeData.LastName} CV.json";
 
-      if (!File.Exists(Path.Combine(strPath, fileName)))
+      ResumeData? result = await this.JsonDataProvider.LoadFromJsonAsync(Path.Combine(destinationPath, fileName));
+
+      if (result == null)
       {
         this.AlertMessage = "No file found from where to load";
         this.ShowWarning("No file found", this.AlertMessage);
         return;
       }
 
-      using FileStream? fileStream = new FileStream(Path.Combine(strPath, fileName), FileMode.Open, FileAccess.Read);
-      ResumeData? dict = await JsonSerializer.DeserializeAsync<ResumeData>(fileStream);
-
-      if (dict != null)
-      {
-        this.ResumeData.FirstName = dict.FirstName;
-        this.ResumeData.LastName = dict.LastName;
-        this.ResumeData.DateOfBirth = dict.DateOfBirth;
-        this.ResumeData.Nationality = dict.Nationality;
-        this.ResumeData.PresentPosition = dict.PresentPosition;
-        this.ResumeData.CurrentCompany = dict.CurrentCompany;
-        this.ResumeData.YearsWithCompany = dict.YearsWithCompany;
-        this.ResumeData.JobRecords = new ObservableCollection<JobRecord>(dict.JobRecords.Select(s => new JobRecord
-        {
-          Id = s.Id,
-          FromDate = s.FromDate,
-          ToDate = s.ToDate,
-          CompanyName = s.CompanyName,
-          JobDescription = s.JobDescription,
-          PositionTitle = s.PositionTitle,
-          IsPresent = s.IsPresent,
-        }));
-        this.ResumeData.Educations = new ObservableCollection<Education>(dict.Educations.Select(s => new Education
-        {
-          Id = s.Id,
-          Description = s.Description,
-        }));
-        this.ResumeData.Languages = new ObservableCollection<Language>(dict.Languages.Select(s => new Language
-        {
-          Id = s.Id,
-          Name = s.Name,
-          Level = s.Level,
-        }));
-      }
+      this.ResumeData = result;
     }
 
     private bool CanRemovePosition()
@@ -273,9 +234,12 @@ namespace ResumeMachine.ViewModels
 
     private async Task PrintAsync()
     {
+      string destinationPath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+      string? fileName = $"{resumeData.FirstName} {resumeData.LastName} CV.json";
+
       this.ProgressBarIsRunning = true;
       this.AlertMessage = await WordWriter.WriteToWordTemplate(this.ResumeData);
-      await this.SaveToJsonAsync();
+      await this.JsonDataProvider.SaveToJsonAsync(this.ResumeData, Path.Combine(destinationPath, fileName));
       this.ProgressBarIsRunning = false;
       ShowSuccess("Files are ready", this.AlertMessage);
 
@@ -459,6 +423,7 @@ namespace ResumeMachine.ViewModels
     private volatile bool RequestStop = false;
 
     private ConfirmationDialogViewModel ConfirmationDialogViewModel { get; set; }
-    public NotificationViewModel NotificationViewModel { get; set; }
+    private NotificationViewModel NotificationViewModel { get; set; }
+    private JsonDataProvider JsonDataProvider { get; set; }
   }
 }

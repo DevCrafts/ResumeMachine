@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Notification.Wpf;
+using ResumeMachine.Data;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -27,7 +28,7 @@ namespace ResumeMachine
     private void ConfigureServices(ServiceCollection services)
     {
       services.AddSingleton<INotificationManager, NotificationManager>();
-
+      //services.AddSingleton<IJsonDataProvider, JsonDataProvider>();
       services.AddSingleton<MainWindow>();
     }
 

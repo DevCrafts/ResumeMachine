@@ -10,6 +10,7 @@
              d:DataContext="{d:DesignInstance Type=viewmodels:ConfirmationDialogViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
+  
   <Grid Margin="16">
 
     <Grid.RowDefinitions>
