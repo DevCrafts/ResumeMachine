@@ -282,7 +282,7 @@ namespace ResumeMachine.ViewModels
         Message = message,
         Type = NotificationType.Information,
       };
-      notificationManager.Show(content);
+      NotificationManager.Show(content);
     }
 
     private void ShowWarning(string title, string message)
@@ -293,7 +293,7 @@ namespace ResumeMachine.ViewModels
         Message = message,
         Type = NotificationType.Warning,
       };
-      notificationManager.Show(content);
+      NotificationManager.Show(content);
     }
 
     private void ShowSuccess(string title, string message)
@@ -304,7 +304,7 @@ namespace ResumeMachine.ViewModels
         Message = message,
         Type = NotificationType.Success,
       };
-      notificationManager.Show(content);
+      NotificationManager.Show(content);
     }
 
     private ResumeData resumeData;
@@ -418,8 +418,8 @@ namespace ResumeMachine.ViewModels
     public ICommand ChangeAllCVsCommand => new AsyncRelayCommand(param => this.ChangeAllCvsAsync());
     public ICommand PrintCommand => new AsyncRelayCommand(param => this.PrintAsync());
 
-    private static readonly NotificationManager notificationManager = new();
-    private System.Timers.Timer Timer = new System.Timers.Timer();
+    private static readonly NotificationManager NotificationManager = new();
+    private readonly System.Timers.Timer Timer = new System.Timers.Timer();
     private volatile bool RequestStop = false;
 
     private ConfirmationDialogViewModel ConfirmationDialogViewModel { get; set; }
