@@ -10,7 +10,7 @@ Optional:
 	M-Files part is in separate class and is commented out by default due to possibly missing COM API's on user's computer
 
 Built with:
-MVVM
-.NET 6
-WPF Material Design
-WPF
+- MVVM
+- .NET 6
+- WPF Material Design
+- WPF
