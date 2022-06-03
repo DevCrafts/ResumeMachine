@@ -23,6 +23,7 @@ namespace ResumeMachine.ViewModels
     {
       this.ConfirmationDialogViewModel = new ConfirmationDialogViewModel();
       this.NotificationViewModel = new NotificationViewModel();
+      this.PasswordDialogViewModel = new PasswordDialogViewModel();
       this.JsonDataProvider = new JsonDataProvider();
 
       this.nationalities = this.LoadNationalities();
@@ -139,12 +140,12 @@ namespace ResumeMachine.ViewModels
 
     private async Task ChangeAllCvsAsync()
     {
-      ConfirmationDialog view = new ConfirmationDialog
+      PasswordDialog view = new PasswordDialog
       {
-        DataContext = this.ConfirmationDialogViewModel
+        DataContext = this.PasswordDialogViewModel
       };
 
-      this.ConfirmationDialogViewModel.NotificationMessage = "Are you sure you want to proceed?";
+      this.PasswordDialogViewModel.Message = "Please provide password in order to proceed:";
       object result = await DialogHost.Show(view, "MainDialogHost", this.ExtendedOpenedEventHandler, this.ExtendedNotificationClosingEventHandler);
     }
 
@@ -159,10 +160,14 @@ namespace ResumeMachine.ViewModels
       {
         return;
       }
-
       eventArgs.Cancel();
 
-      Task.Delay(TimeSpan.FromSeconds(0)).ContinueWith((t, _) => eventArgs.Session.Close(false), this.PerformChangeOfAllCvsAsync(), TaskScheduler.FromCurrentSynchronizationContext());
+      if (this.PasswordDialogViewModel.Password == "1234")
+      {
+        Task.Delay(TimeSpan.FromSeconds(0)).ContinueWith((t, _) => eventArgs.Session.Close(false), this.PerformChangeOfAllCvsAsync(), TaskScheduler.FromCurrentSynchronizationContext());
+      }
+
+      this.PasswordDialogViewModel.NotificationMessage = "Wrong password, try again!";
     }
 
     private Task PerformChangeOfAllCvsAsync()
@@ -418,6 +423,7 @@ namespace ResumeMachine.ViewModels
 
     private ConfirmationDialogViewModel ConfirmationDialogViewModel { get; set; }
     private NotificationViewModel NotificationViewModel { get; set; }
+    private PasswordDialogViewModel PasswordDialogViewModel { get; set; }
     private JsonDataProvider JsonDataProvider { get; set; }
   }
 }
