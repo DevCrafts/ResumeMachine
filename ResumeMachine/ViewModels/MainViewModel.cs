@@ -146,15 +146,10 @@ namespace ResumeMachine.ViewModels
       };
 
       this.PasswordDialogViewModel.Message = "Please provide password in order to proceed:";
-      object result = await DialogHost.Show(view, "MainDialogHost", this.ExtendedOpenedEventHandler, this.ExtendedNotificationClosingEventHandler);
+      object result = await DialogHost.Show(view, "MainDialogHost", null, this.ChangeAllNotificationClosingEventHandler);
     }
 
-    private void ExtendedOpenedEventHandler(object sender, DialogOpenedEventArgs eventargs)
-    {
-      // something here
-    }
-
-    private void ExtendedNotificationClosingEventHandler(object sender, DialogClosingEventArgs eventArgs)
+    private void ChangeAllNotificationClosingEventHandler(object sender, DialogClosingEventArgs eventArgs)
     {
       if ((bool)eventArgs.Parameter == false)
       {
@@ -234,6 +229,28 @@ namespace ResumeMachine.ViewModels
 
     private async Task PrintAsync()
     {
+      ConfirmationDialog view = new ConfirmationDialog
+      {
+        DataContext = this.ConfirmationDialogViewModel
+      };
+
+      this.ConfirmationDialogViewModel.NotificationMessage = "Are you sure you want to print CV's?";
+      object result = await DialogHost.Show(view, "MainDialogHost", null, this.PrintNotificationClosingEventHandler);
+    }
+
+    private void PrintNotificationClosingEventHandler(object sender, DialogClosingEventArgs eventArgs)
+    {
+      if ((bool)eventArgs.Parameter == false)
+      {
+        return;
+      }
+      eventArgs.Cancel();
+
+      Task.Delay(TimeSpan.FromSeconds(0)).ContinueWith((t, _) => eventArgs.Session.Close(false), this.PrintCvsAsync(), TaskScheduler.FromCurrentSynchronizationContext());
+    }
+
+    private async Task PrintCvsAsync()
+    {
       string destinationPath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
       string? fileName = $"{resumeData.FirstName} {resumeData.LastName} CV.json";
 
@@ -241,7 +258,7 @@ namespace ResumeMachine.ViewModels
       this.AlertMessage = await WordWriter.WriteToWordTemplate(this.ResumeData, destinationPath);
       await this.JsonDataProvider.SaveToJsonAsync(this.ResumeData, Path.Combine(destinationPath, fileName));
       this.ProgressBarIsRunning = false;
-      ShowSuccess("Files are ready", this.AlertMessage);
+      this.ShowSuccess("Files are ready", this.AlertMessage);
 
       this.StartTimer();
     }
