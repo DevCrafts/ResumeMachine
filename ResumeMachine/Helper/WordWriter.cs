@@ -11,9 +11,8 @@ namespace ResumeMachine.Helper
 {
   public static class WordWriter
   {
-    public static async Task<string> WriteToWordTemplate(ResumeData cvData)
+    public static async Task<string> WriteToWordTemplate(ResumeData cvData, string destinationPath)
     {
-      string destinationPath = Environment.GetFolderPath(System.Environment.SpecialFolder.DesktopDirectory);
       string templateLocationPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
 
       string fullLocationPath = Path.Combine(templateLocationPath, "Resources", "CV Template", "template.docx");

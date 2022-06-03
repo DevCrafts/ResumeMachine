@@ -200,11 +200,6 @@ namespace ResumeMachine.ViewModels
       return this.resumeData.Languages.Count > 1;
     }
 
-    private void ToMFiles()
-    {
-      throw new NotImplementedException();
-    }
-
     private async Task LoadFromJsonAsync()
     {
       string destinationPath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
@@ -238,7 +233,7 @@ namespace ResumeMachine.ViewModels
       string? fileName = $"{resumeData.FirstName} {resumeData.LastName} CV.json";
 
       this.ProgressBarIsRunning = true;
-      this.AlertMessage = await WordWriter.WriteToWordTemplate(this.ResumeData);
+      this.AlertMessage = await WordWriter.WriteToWordTemplate(this.ResumeData, destinationPath);
       await this.JsonDataProvider.SaveToJsonAsync(this.ResumeData, Path.Combine(destinationPath, fileName));
       this.ProgressBarIsRunning = false;
       ShowSuccess("Files are ready", this.AlertMessage);
@@ -414,7 +409,6 @@ namespace ResumeMachine.ViewModels
     public ICommand RemoveEducationCommand => new RelayCommand(param => this.RemoveEducation(), canExecute: param => this.CanRemoveEducation());
     public ICommand AddLanguageCommand => new RelayCommand(param => this.AddNewLanguage());
     public ICommand RemoveLanguageCommand => new RelayCommand(param => this.RemoveLanguage(), canExecute: param => this.CanRemoveLanguage());
-    public ICommand ToMFilesCommand => new RelayCommand(param => this.ToMFiles());
     public ICommand ChangeAllCVsCommand => new AsyncRelayCommand(param => this.ChangeAllCvsAsync());
     public ICommand PrintCommand => new AsyncRelayCommand(param => this.PrintAsync());
 

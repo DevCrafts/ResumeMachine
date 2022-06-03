@@ -93,7 +93,6 @@
         </StackPanel.Resources>
         <Button Content="Load data" Command="{Binding LoadDataCommand}"/>
         <Button Content="Print" Command="{Binding PrintCommand}"/>
-        <Button Content="To MFiles" Command="{Binding ToMFilesCommand}"/>
         <Button Content="Change all" Command="{Binding ChangeAllCVsCommand}"/>
       </StackPanel>
 
