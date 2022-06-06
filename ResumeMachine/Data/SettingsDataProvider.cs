@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace ResumeMachine.Data
 {
-  public class SettingsDataProvider
+  public class SettingsDataProvider : ISettingsDataProvider
   {
     public async Task<List<Setting>> LoadSettingsFromJsonAsync()
     {

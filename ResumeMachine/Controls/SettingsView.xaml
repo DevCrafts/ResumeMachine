@@ -26,7 +26,7 @@
     <StackPanel Grid.Row="0" Grid.ColumnSpan="2">
       <TextBlock FontWeight="Bold" Text="Destination folder path:" VerticalAlignment="Center"></TextBlock>
       <DockPanel HorizontalAlignment="Stretch">
-        <TextBlock Text="{Binding FolderPath}" Width="500" TextTrimming="WordEllipsis" 
+        <TextBlock Text="{Binding FolderPath}" Width="500" TextTrimming="CharacterEllipsis" 
                    VerticalAlignment="Center" DockPanel.Dock="Left"></TextBlock>
         <Button Content="Select folder" Command="{Binding SelectFolderCommand}" Width="150" DockPanel.Dock="Right"></Button>
       </DockPanel>
@@ -35,7 +35,7 @@
     <StackPanel Grid.Row="1" Grid.ColumnSpan="2">
       <TextBlock FontWeight="Bold" Text="Word template path:" VerticalAlignment="Center"></TextBlock>
       <DockPanel HorizontalAlignment="Stretch">
-        <TextBlock Text="{Binding TemplatePath}" TextTrimming="WordEllipsis" 
+        <TextBlock Text="{Binding TemplatePath}" TextTrimming="CharacterEllipsis" 
                    Width="500" VerticalAlignment="Center" DockPanel.Dock="Left"></TextBlock>
         <Button Content="Select folder" Command="{Binding SelectTemplateCommand}" Width="150" DockPanel.Dock="Right"></Button>
       </DockPanel>

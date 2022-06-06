@@ -10,7 +10,10 @@
   <Grid>
     <StackPanel Grid.Row="0" Grid.ColumnSpan="3" Background="#363636">
       <ProgressBar IsIndeterminate="{Binding ProgressBarIsRunning}" Height="4"></ProgressBar>
-      <TextBlock Height="20" Text="{Binding AlertMessage}" Foreground="White" Margin="10,5,0,0"/>
+      <DockPanel Height="35">
+        <TextBlock Text="{Binding AlertMessage}" VerticalAlignment="Center" Foreground="White" HorizontalAlignment="Left" Margin="10,10,10,10"/>
+        <TextBlock Text="vadimffe © 2022" VerticalAlignment="Center" Foreground="White" HorizontalAlignment="Right" Margin="10,10,10,10"/>
+      </DockPanel>
     </StackPanel>
   </Grid>
   
