@@ -26,12 +26,12 @@ namespace ResumeMachine.ViewModels
 
     private void SelectFolderPath()
     {
-      var dlg = new FolderPicker();
-      dlg.InputPath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+      FolderPicker? openFolderDialog = new FolderPicker();
+      openFolderDialog.InputPath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
 
-      if (dlg.ShowDialog() == true)
+      if (openFolderDialog.ShowDialog() == true)
       {
-        this.FolderPath = dlg.ResultPath;
+        this.FolderPath = openFolderDialog.ResultPath;
       }
     }
 
@@ -74,6 +74,15 @@ namespace ResumeMachine.ViewModels
       if (string.IsNullOrEmpty(this.FolderPath))
       {
         this.folderPath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+      }
+    }
+
+    private void SelectTemplatePath()
+    {
+      OpenFileDialog openFileDialog = new OpenFileDialog();
+      if (openFileDialog.ShowDialog() == true)
+      {
+        this.TemplatePath = openFileDialog.FileName;
       }
     }
 
@@ -129,6 +138,7 @@ namespace ResumeMachine.ViewModels
     }
 
     public ICommand SelectFolderCommand => new RelayCommand(param => this.SelectFolderPath());
+    public ICommand SelectTemplateCommand => new RelayCommand(param => this.SelectTemplatePath());
 
     public event EventHandler<EventArgs> SettingsChanged;
     protected virtual void OnSettingsChanged() => this.SettingsChanged?.Invoke(this, new EventArgs());
