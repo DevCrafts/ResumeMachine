@@ -18,9 +18,9 @@ namespace ResumeMachine.Components
   /// <summary>
   /// Interaction logic for MainView.xaml
   /// </summary>
-  public partial class MainView : UserControl
+  public partial class HomeView : UserControl
   {
-    public MainView()
+    public HomeView()
     {
       InitializeComponent();
     }

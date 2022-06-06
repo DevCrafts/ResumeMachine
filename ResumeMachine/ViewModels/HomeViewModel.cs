@@ -19,14 +19,14 @@ namespace ResumeMachine.ViewModels
 {
   public class HomeViewModel : BaseViewModel, IHomeViewModel
   {
-    public HomeViewModel()
+    public HomeViewModel(ISettingsViewModel settingsViewModel)
     {
       this.ConfirmationDialogViewModel = new ConfirmationDialogViewModel();
       this.NotificationViewModel = new NotificationViewModel();
       this.PasswordDialogViewModel = new PasswordDialogViewModel();
       this.JsonDataProvider = new JsonDataProvider();
 
-      this.SettingsViewModel = new SettingsViewModel();
+      this.SettingsViewModel = settingsViewModel;
       this.SettingsViewModel.SettingsChanged += this.OnSettingsChanged;
 
       this.nationalities = this.LoadNationalities();
@@ -43,11 +43,6 @@ namespace ResumeMachine.ViewModels
       this.Timer.Elapsed += this.OnTimerElapsed;
       this.Timer.AutoReset = false;
       this.Timer.Start();
-
-      string templateLocationPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-
-      this.templateLocationPath = Path.Combine(templateLocationPath, "Resources", "CV Template", "template.docx");
-      this.destinationFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
 
       //this.cvData = new CvData() 
       //{ 
@@ -68,7 +63,8 @@ namespace ResumeMachine.ViewModels
 
     private void OnSettingsChanged(object? sender, EventArgs e)
     {
-      throw new NotImplementedException();
+      this.DestinationFolderPath = this.SettingsViewModel.FolderPath;
+      this.TemplateLocationPath = this.SettingsViewModel.TemplatePath;
     }
 
     private ResumeData InitializeExampleData()
@@ -257,6 +253,11 @@ namespace ResumeMachine.ViewModels
     {
       this.ConfirmationDialogViewModel.AlertMessage = "";
 
+      if (!Directory.Exists(this.destinationFolderPath))
+      {
+        Directory.CreateDirectory(this.destinationFolderPath);
+      }
+
       if ((bool)eventArgs.Parameter == false)
       {
         return;
@@ -266,22 +267,24 @@ namespace ResumeMachine.ViewModels
       string fullPDFDestinationPath = Path.Combine(this.destinationFolderPath, $"CV {this.resumeData.FirstName} {this.resumeData.LastName}.pdf");
       string fullWordDestinationPath = Path.Combine(this.destinationFolderPath, $"CV {this.resumeData.FirstName} {this.resumeData.LastName}.docx");
 
-      if (!FileAccessProvider.IsLocked(fullWordDestinationPath))
+      if (Directory.Exists(this.destinationFolderPath) && !FileAccessProvider.IsLocked(fullWordDestinationPath) && !FileAccessProvider.IsLocked(fullPDFDestinationPath))
       {
         Task.Delay(TimeSpan.FromSeconds(0)).ContinueWith((t, _) => eventArgs.Session.Close(false), this.PrintCvsAsync(), TaskScheduler.FromCurrentSynchronizationContext());
       }
 
-      this.ConfirmationDialogViewModel.AlertMessage = "File is in use. Close file and try again!";
+      if (FileAccessProvider.IsLocked(fullWordDestinationPath))
+      {
+        this.ConfirmationDialogViewModel.AlertMessage = "File is in use. Close file and try again!";
+      }
     }
 
     private async Task PrintCvsAsync()
     {
-      string destinationPath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
-      string? fileName = $"{resumeData.FirstName} {resumeData.LastName} CV.json";
+      string? fileName = $"CV {this.resumeData.FirstName} {this.resumeData.LastName}.json";
 
       this.ProgressBarIsRunning = true;
       this.AlertMessage = await WordWriter.WriteToWordTemplate(this.ResumeData, this.destinationFolderPath, this.templateLocationPath);
-      await this.JsonDataProvider.SaveToJsonAsync(this.ResumeData, Path.Combine(destinationPath, fileName));
+      await this.JsonDataProvider.SaveToJsonAsync(this.ResumeData, Path.Combine(this.destinationFolderPath, fileName));
       this.ProgressBarIsRunning = false;
       this.ShowSuccess("Files are ready", this.AlertMessage);
 

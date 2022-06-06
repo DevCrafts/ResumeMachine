@@ -21,6 +21,11 @@ namespace ResumeMachine.Helper
         return "Some of files in output directory is in use, please close and try again!";
       }
 
+      if (!File.Exists(fullWordDestinationPath))
+      {
+        return "No template file has been selected!";
+      }
+
       await System.Threading.Tasks.Task.Run(() =>
       {
         Word._Application wApp = new Word.Application();

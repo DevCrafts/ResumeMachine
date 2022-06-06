@@ -4,6 +4,7 @@ using ResumeMachine.Data;
 using ResumeMachine.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition.Hosting;
 using System.Configuration;
 using System.Data;
 using System.Linq;
@@ -17,27 +18,18 @@ namespace ResumeMachine
   /// </summary>
   public partial class App : Application
   {
-    private ServiceProvider serviceProvider;
-
-    public App()
+    private void Run(object sender, StartupEventArgs e)
     {
-      ServiceCollection services = new ServiceCollection();
-      ConfigureServices(services);
-      serviceProvider = services.BuildServiceProvider();
-    }
+      this.MainViewModel = new MainViewModel();
 
-    private void ConfigureServices(ServiceCollection services)
-    {
-      services.AddSingleton<INotificationManager, NotificationManager>();
-      //services.AddSingleton<ISettingsViewModel, SettingsViewModel>();
-      //services.AddSingleton<IJsonDataProvider, JsonDataProvider>();
-      services.AddSingleton<MainWindow>();
-    }
+      var mainWindow = new MainWindow
+      {
+        DataContext = this.MainViewModel,
+      };
 
-    private void OnStartup(object sender, StartupEventArgs e)
-    {
-      MainWindow? mainWindow = serviceProvider.GetService<MainWindow>();
       mainWindow.Show();
     }
+
+    private MainViewModel MainViewModel { get; set; }
   }
 }
