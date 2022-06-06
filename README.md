@@ -18,4 +18,4 @@ Built with:
 - WPF
 - JSON
 
-![image](https://user-images.githubusercontent.com/72302395/171934675-50987781-edef-4eda-84e3-c250e09c2c85.png)
+![image](https://user-images.githubusercontent.com/72302395/172241587-fe943c43-ab0a-4910-bb46-484f055b5343.png)
