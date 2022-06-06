@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Notification.Wpf;
 using ResumeMachine.Data;
+using ResumeMachine.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -28,13 +29,14 @@ namespace ResumeMachine
     private void ConfigureServices(ServiceCollection services)
     {
       services.AddSingleton<INotificationManager, NotificationManager>();
+      //services.AddSingleton<ISettingsViewModel, SettingsViewModel>();
       //services.AddSingleton<IJsonDataProvider, JsonDataProvider>();
       services.AddSingleton<MainWindow>();
     }
 
     private void OnStartup(object sender, StartupEventArgs e)
     {
-      var mainWindow = serviceProvider.GetService<MainWindow>();
+      MainWindow? mainWindow = serviceProvider.GetService<MainWindow>();
       mainWindow.Show();
     }
   }

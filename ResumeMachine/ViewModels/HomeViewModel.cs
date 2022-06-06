@@ -17,14 +17,17 @@ using System.Windows.Input;
 
 namespace ResumeMachine.ViewModels
 {
-  public class MainViewModel : BaseViewModel
+  public class HomeViewModel : BaseViewModel, IHomeViewModel
   {
-    public MainViewModel()
+    public HomeViewModel()
     {
       this.ConfirmationDialogViewModel = new ConfirmationDialogViewModel();
       this.NotificationViewModel = new NotificationViewModel();
       this.PasswordDialogViewModel = new PasswordDialogViewModel();
       this.JsonDataProvider = new JsonDataProvider();
+
+      this.SettingsViewModel = new SettingsViewModel();
+      this.SettingsViewModel.SettingsChanged += this.OnSettingsChanged;
 
       this.nationalities = this.LoadNationalities();
       this.availableLanguages = this.LoadAvailableLanguages();
@@ -41,6 +44,11 @@ namespace ResumeMachine.ViewModels
       this.Timer.AutoReset = false;
       this.Timer.Start();
 
+      string templateLocationPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+
+      this.templateLocationPath = Path.Combine(templateLocationPath, "Resources", "CV Template", "template.docx");
+      this.destinationFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+
       //this.cvData = new CvData() 
       //{ 
       //  Educations = new ObservableCollection<Education>
@@ -56,6 +64,11 @@ namespace ResumeMachine.ViewModels
       //    new JobRecord { Id = 1 },
       //  },
       //};
+    }
+
+    private void OnSettingsChanged(object? sender, EventArgs e)
+    {
+      throw new NotImplementedException();
     }
 
     private ResumeData InitializeExampleData()
@@ -151,6 +164,8 @@ namespace ResumeMachine.ViewModels
 
     private void ChangeAllNotificationClosingEventHandler(object sender, DialogClosingEventArgs eventArgs)
     {
+      this.PasswordDialogViewModel.NotificationMessage = "";
+
       if ((bool)eventArgs.Parameter == false)
       {
         return;
@@ -240,13 +255,23 @@ namespace ResumeMachine.ViewModels
 
     private void PrintNotificationClosingEventHandler(object sender, DialogClosingEventArgs eventArgs)
     {
+      this.ConfirmationDialogViewModel.AlertMessage = "";
+
       if ((bool)eventArgs.Parameter == false)
       {
         return;
       }
       eventArgs.Cancel();
 
-      Task.Delay(TimeSpan.FromSeconds(0)).ContinueWith((t, _) => eventArgs.Session.Close(false), this.PrintCvsAsync(), TaskScheduler.FromCurrentSynchronizationContext());
+      string fullPDFDestinationPath = Path.Combine(this.destinationFolderPath, $"CV {this.resumeData.FirstName} {this.resumeData.LastName}.pdf");
+      string fullWordDestinationPath = Path.Combine(this.destinationFolderPath, $"CV {this.resumeData.FirstName} {this.resumeData.LastName}.docx");
+
+      if (!FileAccessProvider.IsLocked(fullWordDestinationPath))
+      {
+        Task.Delay(TimeSpan.FromSeconds(0)).ContinueWith((t, _) => eventArgs.Session.Close(false), this.PrintCvsAsync(), TaskScheduler.FromCurrentSynchronizationContext());
+      }
+
+      this.ConfirmationDialogViewModel.AlertMessage = "File is in use. Close file and try again!";
     }
 
     private async Task PrintCvsAsync()
@@ -255,7 +280,7 @@ namespace ResumeMachine.ViewModels
       string? fileName = $"{resumeData.FirstName} {resumeData.LastName} CV.json";
 
       this.ProgressBarIsRunning = true;
-      this.AlertMessage = await WordWriter.WriteToWordTemplate(this.ResumeData, destinationPath);
+      this.AlertMessage = await WordWriter.WriteToWordTemplate(this.ResumeData, this.destinationFolderPath, this.templateLocationPath);
       await this.JsonDataProvider.SaveToJsonAsync(this.ResumeData, Path.Combine(destinationPath, fileName));
       this.ProgressBarIsRunning = false;
       this.ShowSuccess("Files are ready", this.AlertMessage);
@@ -391,6 +416,28 @@ namespace ResumeMachine.ViewModels
       }
     }
 
+    private string templateLocationPath;
+    public string TemplateLocationPath
+    {
+      get => templateLocationPath;
+      set
+      {
+        templateLocationPath = value;
+        this.OnPropertyChanged();
+      }
+    }
+
+    private string destinationFolderPath;
+    public string DestinationFolderPath
+    {
+      get => destinationFolderPath;
+      set
+      {
+        destinationFolderPath = value;
+        this.OnPropertyChanged();
+      }
+    }
+
     private bool progressBarIsRunning;
     public bool ProgressBarIsRunning
     {
@@ -441,6 +488,7 @@ namespace ResumeMachine.ViewModels
     private ConfirmationDialogViewModel ConfirmationDialogViewModel { get; set; }
     private NotificationViewModel NotificationViewModel { get; set; }
     private PasswordDialogViewModel PasswordDialogViewModel { get; set; }
+    private ISettingsViewModel SettingsViewModel { get; set; }
     private JsonDataProvider JsonDataProvider { get; set; }
   }
 }

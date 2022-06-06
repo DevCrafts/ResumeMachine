@@ -5,261 +5,73 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewmodel="clr-namespace:ResumeMachine.ViewModels" 
         xmlns:converters="clr-namespace:ResumeMachine.Converters" 
-        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
+        xmlns:local="clr-namespace:ResumeMachine.Components" 
+        xmlns:dragablz="http://dragablz.net/winfx/xaml/dragablz"
         mc:Ignorable="d"
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{DynamicResource MaterialDesignFont}"
         FontSize="14"
-        d:DataContext="{d:DesignInstance Type={x:Type viewmodel:MainViewModel}}"
         Title="Curriculum Vitae Generator" Height="900" Width="800">
 
   <Window.Resources>
-    <viewmodel:MainViewModel x:Key="MainViewModelDataContext" />
-    <converters:InvertableBooleanToVisibilityConverter x:Key="InvertableBooleanToVisibilityConverter"/>
+    <viewmodel:HomeViewModel x:Key="HomeViewModelDataContext" />
+    <viewmodel:SettingsViewModel x:Key="SettingsViewModelDataContext" />
   </Window.Resources>
 
-  <Grid DataContext="{StaticResource MainViewModelDataContext}">
-
+  <!--<Grid>
+    
     <Grid.RowDefinitions>
-      <RowDefinition Height="Auto" />
-      <RowDefinition Height="Auto" />
       <RowDefinition Height="Auto" />
       <RowDefinition Height="*" />
     </Grid.RowDefinitions>
-    <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="2*" />
-      <ColumnDefinition Width="2*" />
-      <ColumnDefinition Width="1*" />
-    </Grid.ColumnDefinitions>
 
-    <StackPanel Grid.Row="0" Grid.ColumnSpan="3" Background="#04619f">
-      <ProgressBar IsIndeterminate="{Binding ProgressBarIsRunning}" Height="4"></ProgressBar>
-      <TextBlock Height="20" Text="{Binding AlertMessage}" Foreground="White" Margin="10,5,0,0"/>
-    </StackPanel>
+    <local:TopBar Grid.Row="0"/>
 
-    <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" Margin="10,10,10,10">
-      <TextBlock Text="Select employee:"></TextBlock>
-      <ComboBox IsEditable="True" IsTextSearchEnabled="True" ItemsSource="{Binding Employees}" SelectedItem="{Binding SelectedEmployee}"/>
-    </StackPanel>
+    <dragablz:TabablzControl Grid.Row="1">
+      <dragablz:TabablzControl.InterTabController>
+        <dragablz:InterTabController />
+      </dragablz:TabablzControl.InterTabController>
+      <TabItem Header="MAIN">
+        <local:MainView/>
+      </TabItem>
+      <TabItem Header="SETTINGS">
+        <local:SettingsView/>
+      </TabItem>
+    </dragablz:TabablzControl>
 
-    <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3">
-      <Grid.Resources>
-        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource MaterialDesignButtonTextBlock}">
-          <Setter Property="Margin" Value="0,5,0,0"/>
-        </Style>
-      </Grid.Resources>
+    <materialDesign:DialogHost DataContext="{StaticResource MainViewModelDataContext}" Grid.Column="0" Grid.Row="0" Grid.RowSpan="6" Grid.ColumnSpan="3" Identifier="MainDialogHost"/>
+  </Grid>-->
 
-      <Grid.RowDefinitions>
-        <RowDefinition Height="Auto" />
-        <RowDefinition Height="Auto" />
-        <RowDefinition Height="Auto" />
-      </Grid.RowDefinitions>
-      <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="2*" />
-        <ColumnDefinition Width="2*" />
-        <ColumnDefinition Width="1*" />
-      </Grid.ColumnDefinitions>
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="*"/>
+    </Grid.RowDefinitions>
 
-      <TextBlock Text="General information" FontWeight="Bold" Grid.Row="0" Grid.Column="0" Margin="10,0,0,0"></TextBlock>
+    <local:TopBar DataContext="{StaticResource HomeViewModelDataContext}" Grid.Row="0"/>
 
-      <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" Margin="10,10,10,0">
-        <TextBlock Text="First name:"></TextBlock>
-        <TextBox Text="{Binding ResumeData.FirstName}"></TextBox>
-        <TextBlock Text="Last name:"></TextBlock>
-        <TextBox Text="{Binding ResumeData.LastName}"></TextBox>
-        <TextBlock Text="Date of birth:"></TextBlock>
-        <DatePicker SelectedDate="{Binding ResumeData.DateOfBirth}"/>
-        <TextBlock Text="Nationality:"></TextBlock>
-        <ComboBox IsEditable="True" ItemsSource="{Binding Nationalities}" IsTextSearchEnabled="True" SelectedItem="{Binding ResumeData.Nationality}"/>
+    <materialDesign:ColorZone Mode="PrimaryMid" Grid.Row="1">
+      <StackPanel Orientation="Horizontal" Margin="2">
+        <RadioButton Style="{StaticResource MaterialDesignTabRadioButton}" x:Name="rbTab1" Margin="4" IsChecked="True" Content="MAIN"/>
+        <RadioButton Style="{StaticResource MaterialDesignTabRadioButton}" x:Name="rbTab2" Margin="4" Content="SETTINGS"/>
       </StackPanel>
+    </materialDesign:ColorZone>
 
-      <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical" Margin="10,10,10,10">
-        <TextBlock Text="Present position:"></TextBlock>
-        <TextBox Text="{Binding ResumeData.PresentPosition}"></TextBox>
-        <TextBlock Text="Company:"></TextBlock>
-        <TextBox Text="{Binding ResumeData.CurrentCompany}"></TextBox>
-        <TextBlock Text="Years with company:"></TextBlock>
-        <TextBox Text="{Binding ResumeData.YearsWithCompany}"></TextBox>
-      </StackPanel>
-
-      <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Vertical" Margin="10,10,10,10">
-        <StackPanel.Resources>
-          <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignRaisedButton}">
-            <Setter Property="Margin" Value="0,5,0,0"/>
-            <Setter Property="Height" Value="30"/>
-            <Setter Property="Width" Value="110"/>
-            <Setter Property="FontSize" Value="12"/>
-          </Style>
-        </StackPanel.Resources>
-        <Button Content="Load data" Command="{Binding LoadDataCommand}"/>
-        <Button Content="Print" Command="{Binding PrintCommand}"/>
-        <Button Content="Change all" Command="{Binding ChangeAllCVsCommand}"/>
-      </StackPanel>
-
-      <Separator Grid.Row="2" Grid.ColumnSpan="3" Margin="10,20,10,10"></Separator>
-    </Grid>
-
-    <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3">
-      <Grid ScrollViewer.CanContentScroll="True">
-
-        <Grid.RowDefinitions>
-          <RowDefinition Height="Auto" />
-          <RowDefinition Height="Auto" />
-          <RowDefinition Height="Auto" />
-          <RowDefinition Height="Auto" />
-          <RowDefinition Height="Auto" />
-          <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-
-        <StackPanel Grid.Row="0" Orientation="Vertical" Margin="10,10,10,10">
-          <TextBlock Text="Education" FontWeight="Bold"/>
-          <StackPanel Orientation="Horizontal">
-            <StackPanel.Resources>
-              <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignRaisedButton}">
-                <Setter Property="Margin" Value="0,10,10,0"/>
-                <Setter Property="Height" Value="30"/>
-                <Setter Property="Width" Value="110"/>
-                <Setter Property="FontSize" Value="12"/>
-              </Style>
-            </StackPanel.Resources>
-            <Button Content="Add new" Command="{Binding AddEducationCommand}"/>
-            <Button Content="Remove last" Command="{Binding RemoveEducationCommand}"/>
-          </StackPanel>
-        </StackPanel>
-
-        <ItemsControl ItemsSource="{Binding ResumeData.Educations}" Grid.Row="1"
-             ScrollViewer.CanContentScroll="True" HorizontalContentAlignment="Stretch"
-             ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-          <ItemsControl.ItemTemplate>
-            <DataTemplate>
-              <Grid Margin="10,10,5,5">
-                <Grid.ColumnDefinitions>
-                  <ColumnDefinition Width="1*"/>
-                  <ColumnDefinition Width="2*"/>
-                </Grid.ColumnDefinitions>
-
-                <TextBlock Grid.Column="0" Text="Education with year of graduation" VerticalAlignment="Bottom"/>
-                <TextBox Grid.Column="1" Text="{Binding Description}" />
-
-              </Grid>
-            </DataTemplate>
-          </ItemsControl.ItemTemplate>
-        </ItemsControl>
-
-        <StackPanel Grid.Row="2" Orientation="Vertical" Margin="10,10,10,10">
-          <Separator Margin="0,20,0,10"></Separator>
-          <TextBlock Text="Languages" FontWeight="Bold"/>
-          <StackPanel Orientation="Horizontal">
-            <StackPanel.Resources>
-              <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignRaisedButton}">
-                <Setter Property="Margin" Value="0,10,10,0"/>
-                <Setter Property="Height" Value="30"/>
-                <Setter Property="Width" Value="110"/>
-                <Setter Property="FontSize" Value="12"/>
-              </Style>
-            </StackPanel.Resources>
-            <Button Content="Add new" Command="{Binding AddLanguageCommand}"/>
-            <Button Content="Remove last" Command="{Binding RemoveLanguageCommand}"/>
-          </StackPanel>
-        </StackPanel>
-
-        <ItemsControl ItemsSource="{Binding ResumeData.Languages}" Grid.Row="3"
-             ScrollViewer.CanContentScroll="True" HorizontalContentAlignment="Stretch"
-             ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-          <ItemsControl.ItemTemplate>
-            <DataTemplate>
-              <Grid Margin="10,10,5,5">
-                <Grid.ColumnDefinitions>
-                  <ColumnDefinition Width="1*"/>
-                  <ColumnDefinition Width="*"/>
-                  <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                  <RowDefinition Height="*"/>
-                  <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-
-                <TextBlock Grid.Column="0" Grid.Row="1" Text="Language with level"/>
-
-                <TextBlock Grid.Column="1" Grid.Row="0" Text="Language" FontWeight="Bold" />
-                <ComboBox Grid.Column="1" Grid.Row="1" IsEditable="True" SelectedItem="{Binding Name}"
-                      ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=ItemsControl},
-                             Path=DataContext.AvailableLanguages}" IsTextSearchEnabled="True"/>
-
-                <TextBlock Grid.Column="2" Grid.Row="0" Text="Level" FontWeight="Bold" Margin="10,0,0,0"/>
-                <ComboBox Grid.Column="2" Grid.Row="1" IsEditable="True" SelectedItem="{Binding Level}" Margin="10,0,0,0"
-                      ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=ItemsControl},
-                             Path=DataContext.LanguageLevels}" IsTextSearchEnabled="True"/>
-
-              </Grid>
-            </DataTemplate>
-          </ItemsControl.ItemTemplate>
-        </ItemsControl>
-
-        <StackPanel Grid.Row="4" Orientation="Vertical" Margin="10,10,10,10">
-          <Separator Margin="0,20,0,10"></Separator>
-          <TextBlock Text="Work history" FontWeight="Bold"/>
-          <StackPanel Orientation="Horizontal">
-            <StackPanel.Resources>
-              <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignRaisedButton}">
-                <Setter Property="Margin" Value="0,10,10,0"/>
-                <Setter Property="Height" Value="30"/>
-                <Setter Property="Width" Value="110"/>
-                <Setter Property="FontSize" Value="12"/>
-              </Style>
-            </StackPanel.Resources>
-            <Button Content="Add new" Command="{Binding AddPositionCommand}"/>
-            <Button Content="Remove last" Command="{Binding RemovePositionCommand}"/>
-          </StackPanel>
-        </StackPanel>
-
-        <ItemsControl ItemsSource="{Binding ResumeData.JobRecords}" Grid.Row="5"
-             ScrollViewer.CanContentScroll="False" HorizontalContentAlignment="Stretch"
-             ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled">
-          <ItemsControl.ItemTemplate>
-            <DataTemplate>
-              <Grid Margin="10,10,5,5">
-                <Grid.ColumnDefinitions>
-                  <ColumnDefinition Width="1*"/>
-                  <ColumnDefinition Width="1*"/>
-                  <ColumnDefinition Width="4*"/>
-                </Grid.ColumnDefinitions>
-
-                <StackPanel Grid.Column="0" Orientation="Vertical" Margin="0,0,10,0">
-                  <TextBlock Text="From" FontWeight="Bold"/>
-                  <DatePicker SelectedDate="{Binding FromDate}"/>
-
-                  <TextBlock Text="Present" FontWeight="Bold" Margin="0,10,0,0"/>
-                  <CheckBox IsChecked="{Binding IsPresent}" Name="isPresentCheckbox"/>
-                </StackPanel>
-
-                <StackPanel Grid.Column="1" Orientation="Vertical" Margin="10,0,10,0"
-                        Visibility="{Binding ElementName=isPresentCheckbox, Path=IsChecked, Converter={StaticResource InvertableBooleanToVisibilityConverter}, ConverterParameter=Inverted}" >
-                  <TextBlock Text="To" FontWeight="Bold"/>
-                  <DatePicker SelectedDate="{Binding ToDate}"/>
-                </StackPanel>
-
-                <StackPanel Grid.Column="2" Orientation="Vertical">
-                  <TextBlock Text="Position title" FontWeight="Bold"/>
-                  <TextBox Text="{Binding PositionTitle}" />
-
-                  <TextBlock Text="Company name" FontWeight="Bold" Margin="0,10,0,0"/>
-                  <TextBox Text="{Binding CompanyName}"/>
-
-                  <TextBlock Text="Job description" FontWeight="Bold" Margin="0,10,0,0"/>
-                  <TextBox Text="{Binding JobDescription}" Height="100" TextWrapping="Wrap" 
-                       AcceptsReturn="True" VerticalScrollBarVisibility="Visible"/>
-                </StackPanel>
-
-              </Grid>
-            </DataTemplate>
-          </ItemsControl.ItemTemplate>
-        </ItemsControl>
-
+    <Border Grid.Row="2" BorderThickness="1 0 1 1" BorderBrush="{DynamicResource PrimaryHueMidBrush}" Padding="16">
+      <Grid>
+        <Grid Visibility="{Binding IsChecked, ElementName=rbTab1, Converter={StaticResource BooleanToVisibilityConverter}}">
+          <local:MainView DataContext="{StaticResource HomeViewModelDataContext}"/>
+        </Grid>
+        <Grid Visibility="{Binding IsChecked, ElementName=rbTab2, Converter={StaticResource BooleanToVisibilityConverter}}">
+          <local:SettingsView DataContext="{StaticResource SettingsViewModelDataContext}"/>
+        </Grid>
       </Grid>
-    </ScrollViewer>
+    </Border>
 
-    <materialDesign:DialogHost Grid.Column="0" Grid.Row="0" Grid.RowSpan="6" Grid.ColumnSpan="3" Identifier="MainDialogHost"/>
+    <materialDesign:DialogHost DataContext="{StaticResource HomeViewModelDataContext}" Grid.Column="0" Grid.Row="0" Grid.RowSpan="6" Grid.ColumnSpan="3" Identifier="MainDialogHost"/>
 
   </Grid>
+
 </Window>

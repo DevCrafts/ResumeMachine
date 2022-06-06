@@ -3,15 +3,25 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:ResumeMachine" 
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:dragablz="clr-namespace:Dragablz;assembly=Dragablz"
              StartupUri="MainWindow.xaml">
   <Application.Resources>
     <ResourceDictionary>
-
       <ResourceDictionary.MergedDictionaries>
+
+        <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Button.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.CheckBox.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ListBox.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.RadioButton.xaml" />
+
         <ResourceDictionary Source="pack://application:,,,/ResumeMachine;component/Resources/Fonts.xaml"/>
         <materialDesign:BundledTheme BaseTheme="Light" PrimaryColor="DeepPurple" SecondaryColor="Lime" />
         <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
         <ResourceDictionary Source="pack://application:,,,/ResumeMachine;component/Resources/Styles/MaterialDesignScrollViewerTemplate.xaml"/>
+
+        <!-- Include the Dragablz Material Design style -->
+        <ResourceDictionary Source="pack://application:,,,/Dragablz;component/Themes/materialdesign.xaml"/>
+
       </ResourceDictionary.MergedDictionaries>
 
       <!-- primary -->
@@ -22,9 +32,11 @@
       <SolidColorBrush x:Key="PrimaryHueDarkBrush" Color="#04619F"/>
       <SolidColorBrush x:Key="PrimaryHueDarkForegroundBrush" Color="#FFFFFF"/>
       <!-- accent -->
-      <SolidColorBrush x:Key="SecondaryHueMidBrush" Color="#5C5B5E"/>
+      <SolidColorBrush x:Key="SecondaryHueMidBrush" Color="#FFFFFF"/>
       <SolidColorBrush x:Key="SecondaryHueMidForegroundBrush" Color="#FFFFFF"/>
 
+      <!-- tell Dragablz tab control to use the Material Design theme -->
+      <Style TargetType="{x:Type dragablz:TabablzControl}" BasedOn="{StaticResource MaterialDesignTabablzControlStyle}" />
     </ResourceDictionary>
   </Application.Resources>
 </Application>

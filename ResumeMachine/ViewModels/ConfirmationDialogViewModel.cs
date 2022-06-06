@@ -26,5 +26,16 @@ namespace ResumeMachine.ViewModels
         OnPropertyChanged();
       }
     }
+
+    private string alertMessage;
+    public string AlertMessage
+    {
+      get => alertMessage;
+      set
+      {
+        alertMessage = value;
+        OnPropertyChanged();
+      }
+    }
   }
 }

@@ -11,26 +11,21 @@ namespace ResumeMachine.Helper
 {
   public static class WordWriter
   {
-    public static async Task<string> WriteToWordTemplate(ResumeData cvData, string destinationPath)
+    public static async Task<string> WriteToWordTemplate(ResumeData cvData, string destinationPath, string templateLocationPath)
     {
-      string templateLocationPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-
-      string fullLocationPath = Path.Combine(templateLocationPath, "Resources", "CV Template", "template.docx");
       string fullPDFDestinationPath = Path.Combine(destinationPath, $"CV {cvData.FirstName} {cvData.LastName}.pdf");
       string fullWordDestinationPath = Path.Combine(destinationPath, $"CV {cvData.FirstName} {cvData.LastName}.docx");
 
-      //if (FileAccessProvider.BoolFileLocked(fullLocationPath) 
-      //  || FileAccessProvider.BoolFileLocked(fullPDFDestinationPath) 
-      //  || FileAccessProvider.BoolFileLocked(fullWordDestinationPath))
-      //{
-      //  return "Some of files in output directory is in use, please close and try again!";
-      //}
+      if (FileAccessProvider.IsLocked(fullWordDestinationPath))
+      {
+        return "Some of files in output directory is in use, please close and try again!";
+      }
 
       await System.Threading.Tasks.Task.Run(() =>
       {
         Word._Application wApp = new Word.Application();
         Word.Documents wDocs = wApp.Documents;
-        Word._Document wDoc = wDocs.Open(fullLocationPath, ReadOnly: false);
+        Word._Document wDoc = wDocs.Open(templateLocationPath, ReadOnly: false);
 
         wDoc.Activate();
 
