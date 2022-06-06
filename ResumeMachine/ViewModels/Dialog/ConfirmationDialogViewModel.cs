@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 
-namespace ResumeMachine.ViewModels
+namespace ResumeMachine.ViewModels.Dialog
 {
   public class ConfirmationDialogViewModel : BaseViewModel
   {

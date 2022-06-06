@@ -5,6 +5,7 @@ using ResumeMachine.Data;
 using ResumeMachine.Helper;
 using ResumeMachine.Models;
 using ResumeMachine.UserControls;
+using ResumeMachine.ViewModels.Dialog;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -22,7 +23,7 @@ namespace ResumeMachine.ViewModels
     public HomeViewModel(ISettingsViewModel settingsViewModel)
     {
       this.ConfirmationDialogViewModel = new ConfirmationDialogViewModel();
-      this.NotificationViewModel = new NotificationViewModel();
+      this.NotificationViewModel = new NotificationDialogViewModel();
       this.PasswordDialogViewModel = new PasswordDialogViewModel();
       this.JsonDataProvider = new JsonDataProvider();
 
@@ -489,7 +490,7 @@ namespace ResumeMachine.ViewModels
     private volatile bool RequestStop = false;
 
     private ConfirmationDialogViewModel ConfirmationDialogViewModel { get; set; }
-    private NotificationViewModel NotificationViewModel { get; set; }
+    private NotificationDialogViewModel NotificationViewModel { get; set; }
     private PasswordDialogViewModel PasswordDialogViewModel { get; set; }
     private ISettingsViewModel SettingsViewModel { get; set; }
     private JsonDataProvider JsonDataProvider { get; set; }

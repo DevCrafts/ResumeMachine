@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ResumeMachine.ViewModels
+namespace ResumeMachine.ViewModels.Dialog
 {
-  public class NotificationViewModel : BaseViewModel
+  public class NotificationDialogViewModel : BaseViewModel
   {
     private string errorText;
     public string ErrorText
