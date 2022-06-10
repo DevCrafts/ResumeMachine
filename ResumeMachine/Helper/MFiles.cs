@@ -18,14 +18,14 @@ namespace ResumeMachine.Helper
       //// Note: this code will just return the first connection to the vault.
       //var clientApplication = new MFilesClientApplication();
       //var vault =
-      //	clientApplication
-      //			.GetVaultConnectionsWithGUID(vaultGuid)
-      //			.Cast<VaultConnection>()
-      //			.FirstOrDefault()?
-      //			.BindToVault(IntPtr.Zero, true, true);
+      //  clientApplication
+      //      .GetVaultConnectionsWithGUID(vaultGuid)
+      //      .Cast<VaultConnection>()
+      //      .FirstOrDefault()?
+      //      .BindToVault(IntPtr.Zero, true, true);
       //if (null == vault)
       //{
-      //	throw new NotImplementedException("Vault connection not found");
+      //  throw new NotImplementedException("Vault connection not found");
       //}
 
       //// Define the property values for the new object.
@@ -34,22 +34,22 @@ namespace ResumeMachine.Helper
       //// Class.
       //var classPropertyValue = new MFilesAPI.PropertyValue()
       //{
-      //	PropertyDef = (int)MFBuiltInPropertyDef.MFBuiltInPropertyDefClass
+      //  PropertyDef = (int)MFBuiltInPropertyDef.MFBuiltInPropertyDefClass
       //};
       //classPropertyValue.Value.SetValue(
-      //	MFDataType.MFDatatypeLookup,  // This must be correct for the property definition.
-      //	(int)MFBuiltInDocumentClass.MFBuiltInDocumentClassOtherDocument
-      //	);
+      //  MFDataType.MFDatatypeLookup,  // This must be correct for the property definition.
+      //  (int)MFBuiltInDocumentClass.MFBuiltInDocumentClassOtherDocument
+      //  );
       //propertyValues.Add(-1, classPropertyValue);
 
       //// Name or title.
       //var nameOrTitlePropertyValue = new MFilesAPI.PropertyValue()
       //{
-      //	PropertyDef = (int)MFBuiltInPropertyDef.MFBuiltInPropertyDefNameOrTitle
+      //  PropertyDef = (int)MFBuiltInPropertyDef.MFBuiltInPropertyDefNameOrTitle
       //};
       //nameOrTitlePropertyValue.Value.SetValue(
-      //	MFDataType.MFDatatypeText,  // This must be correct for the property definition.
-      //	"My document"
+      //  MFDataType.MFDatatypeText,  // This must be correct for the property definition.
+      //  "My document"
       //);
       //propertyValues.Add(-1, nameOrTitlePropertyValue);
 
@@ -68,15 +68,15 @@ namespace ResumeMachine.Helper
 
       //// A "single file document" must be both a document and contain exactly one file.
       //var isSingleFileDocument =
-      //	objectTypeID == (int)MFBuiltInObjectType.MFBuiltInObjectTypeDocument && sourceFiles.Count == 1;
+      //  objectTypeID == (int)MFBuiltInObjectType.MFBuiltInObjectTypeDocument && sourceFiles.Count == 1;
 
       //// Create the object and check it in.
       //var objectVersion = vault.ObjectOperations.CreateNewObjectEx(
-      //	objectTypeID,
-      //	propertyValues,
-      //	sourceFiles,
-      //	SFD: isSingleFileDocument,
-      //	CheckIn: true);
+      //  objectTypeID,
+      //  propertyValues,
+      //  sourceFiles,
+      //  SFD: isSingleFileDocument,
+      //  CheckIn: true);
     }
 
     private void LoadListOfEmployees()

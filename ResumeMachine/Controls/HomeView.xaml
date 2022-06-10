@@ -69,7 +69,7 @@
         <TextBlock Text="Company:"></TextBlock>
         <TextBox Text="{Binding ResumeData.CurrentCompany}"></TextBox>
         <TextBlock Text="Years with company:"></TextBlock>
-        <TextBox Text="{Binding ResumeData.YearsWithCompany}"></TextBox>
+        <DatePicker SelectedDate="{Binding ResumeData.SinceWithCompany}"></DatePicker>
       </StackPanel>
 
       <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Vertical" Margin="10,10,10,10">

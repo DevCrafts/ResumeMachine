@@ -15,7 +15,7 @@ namespace ResumeMachine.Models
     public string? Nationality { get; set; }
     public string? PresentPosition { get; set; }
     public string? CurrentCompany { get; set; }
-    public string? YearsWithCompany { get; set; }
+    public DateTime SinceWithCompany { get; set; }
     public ObservableCollection<JobRecord>? JobRecords { get; set; }
     public ObservableCollection<Education>? Educations { get; set; }
     public ObservableCollection<Language>? Languages { get; set; }

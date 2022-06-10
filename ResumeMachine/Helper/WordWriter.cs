@@ -52,14 +52,14 @@ namespace ResumeMachine.Helper
         Word.Bookmark yearsWithCompanyBookmark = wBookmarks["YearsWithCompany"];
         Word.Range wYearsWithCompany = yearsWithCompanyBookmark.Range;
 
-        wDateToday.Text = DateTime.Today.ToShortDateString();
+        wDateToday.Text = DateTime.Today.ToString("dd.MM.yyyy");
         wFirstName.Text = cvData.FirstName;
         wLastName.Text = cvData.LastName;
-        wDateOfBirth.Text = cvData.DateOfBirth.ToShortDateString();
+        wDateOfBirth.Text = cvData.DateOfBirth.ToString("dd.MM.yyyy");
         wNationality.Text = cvData.Nationality;
         wPresentPosition.Text = cvData.PresentPosition;
         wCurrentCompany.Text = cvData.CurrentCompany;
-        wYearsWithCompany.Text = cvData.YearsWithCompany;
+        wYearsWithCompany.Text = $"Since {cvData.SinceWithCompany.ToString("dd.MM.yyyy")}";
 
         object oMissing = System.Reflection.Missing.Value;
         object oEndOfDoc = "\\endofdoc"; // "endofdoc" is a predefined bookmark

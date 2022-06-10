@@ -34,7 +34,8 @@ namespace ResumeMachine.ViewModels
       this.availableLanguages = this.LoadAvailableLanguages();
       this.languageLevels = new List<string> { "Beginner", "Intermediate", "Advanced", "Mother tongue" };
 
-      this.employees = new ObservableCollection<string> { "Jack Smith" };
+      this.Employees = new ObservableCollection<string>();
+      this.LoadExistingCVs();
 
       this.resumeData = this.InitializeExampleData();
 
@@ -68,6 +69,20 @@ namespace ResumeMachine.ViewModels
       this.TemplateLocationPath = this.SettingsViewModel.TemplatePath;
     }
 
+    private void LoadExistingCVs()
+    {
+      while(this.destinationFolderPath == null)
+      {
+        Task.Delay(25);
+      }
+
+      // TODO: Add some foreach loop here
+      foreach (string? filePath in Directory.EnumerateFiles(this.destinationFolderPath, "*.json"))
+      {
+        this.employees.Add(Path.GetFileNameWithoutExtension(filePath.Remove(0, filePath.IndexOf(' ') + 1)));
+      }
+    }
+
     private ResumeData InitializeExampleData()
     {
       return new ResumeData
@@ -75,7 +90,7 @@ namespace ResumeMachine.ViewModels
         FirstName = "John",
         LastName = "Smith",
         PresentPosition = "Director",
-        YearsWithCompany = "2",
+        SinceWithCompany = new DateTime(1999, 11, 21),
         CurrentCompany = "Google",
         Nationality = nationalities[3],
         DateOfBirth = new DateTime(1989, 11, 21),
@@ -177,9 +192,24 @@ namespace ResumeMachine.ViewModels
       this.PasswordDialogViewModel.NotificationMessage = "Wrong password, try again!";
     }
 
-    private Task PerformChangeOfAllCvsAsync()
+    private async Task PerformChangeOfAllCvsAsync()
     {
-      throw new NotImplementedException();
+      string? fileName = $"CV {resumeData.FirstName} {resumeData.LastName}.json";
+
+      // TODO: Add some foreach loop here
+      foreach (string? filePath in Directory.EnumerateFiles(this.destinationFolderPath, "*.json"))
+      {
+        ResumeData? result = await this.JsonDataProvider.LoadFromJsonAsync(Path.Combine(this.destinationFolderPath, fileName));
+
+        if (result == null)
+        {
+          this.AlertMessage = "No file found from where to load";
+          this.ShowWarning("No file found", this.AlertMessage);
+          return;
+        }
+
+        WordWriter.WriteToWordTemplate(result, this.destinationFolderPath, this.templateLocationPath);
+      }
     }
 
     private void AddNewEducation()
@@ -214,10 +244,9 @@ namespace ResumeMachine.ViewModels
 
     private async Task LoadFromJsonAsync()
     {
-      string destinationPath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
-      string? fileName = $"{resumeData.FirstName} {resumeData.LastName} CV.json";
+      string? fileName = $"CV {resumeData.FirstName} {resumeData.LastName}.json";
 
-      ResumeData? result = await this.JsonDataProvider.LoadFromJsonAsync(Path.Combine(destinationPath, fileName));
+      ResumeData? result = await this.JsonDataProvider.LoadFromJsonAsync(Path.Combine(this.destinationFolderPath, fileName));
 
       if (result == null)
       {
