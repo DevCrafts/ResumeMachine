@@ -319,6 +319,8 @@ namespace ResumeMachine.ViewModels
       this.ShowSuccess("Files are ready", this.AlertMessage);
 
       this.StartTimer();
+
+      this.LoadExistingCVs();
     }
 
     private void AddNewPosition()
